@@ -6,7 +6,7 @@ export const fetchPersons = () => {
     headers: { 'Content-Type': 'application/json' }
   })
     .then(response => response.json())
-    .catch(error => { console.error(error) });
+    .catch(error => { console.error(error); throw error });
 };
 
 export const updatePerson = (personId, { name, age, about }) => {
@@ -16,7 +16,7 @@ export const updatePerson = (personId, { name, age, about }) => {
     body: JSON.stringify({ name, age, about })
   })
     .then(response => response.json())
-    .catch(error => console.error(error))
+    .catch(error => { console.error(error); throw error });
 };
 
 export const updatePersons = ({ age, name, about }) => {
@@ -26,7 +26,7 @@ export const updatePersons = ({ age, name, about }) => {
     body: JSON.stringify({ age, name, about })
   })
     .then(response => response.json())
-    .catch(error => { console.error(error) });
+    .catch(error => { console.error(error); throw error });
 };
 
 export const deletePerson = (personId) => {
@@ -35,5 +35,5 @@ export const deletePerson = (personId) => {
     headers: { 'Content-Type': 'application/json' },
   })
     .then(response => response.json())
-    .catch(error => { console.error(error) });
+    .catch(error => { console.error(error); throw error });
 };
