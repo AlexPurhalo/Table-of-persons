@@ -1,76 +1,27 @@
-import { useState, useEffect } from "react";
+import React, { useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { useQuery } from "react-query";
 import { TableWrapper } from "../styles/TableWrapper";
-import {
-  updatePerson,
-  deletePerson,
-  updatePersons,
-  fetchPersons
-} from "../requests";
 import { TableRow } from "./TableRow";
 import { NewPersonRow } from "./NewPersonRow";
 import { TableHeader } from "./TableHeader";
 import { TableBody } from "./TableBody";
+import { fetchPersonsAsync, addPersonAsync, deletePersonAsync, updatePersonAsync } from '../personsSlice'
+import { selectPersons, selectPersonsLoading } from '../personsSlice'
 
-const COLUMN_NAMES = ["ID", "Name", "Age", "About", "Edit", "Delete"];
+const COLUMN_NAMES = ["ID", "Name", "Age", "About", "", ""];
+const FIELD_INIT_DATA = {name: "", age: '', about: ""}
 
 const Table = () => {
-  const [persons, setPersons] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const dispatch = useDispatch();
+  const persons = useSelector(selectPersons);
+  const loading = useSelector(selectPersonsLoading)
+
   const [editingPersonId, setEditingPersonId] = useState(null);
-  const [editedPersonValues, setEditedPersonValues] = useState({
-    name: "",
-    age: null,
-    about: ""
-  });
+  const [editedPersonValues, setEditedPersonValues] = useState(FIELD_INIT_DATA);
+  const [newPersonValues, setNewPersonValues] = useState(FIELD_INIT_DATA);
 
-  const [newPersonValues, setNewPersonValues] = useState({
-    name: "",
-    age: null,
-    about: ""
-  });
-
-  useEffect(() => {
-    const fetchData = async () => {
-      const data = await fetchPersons();
-      setPersons(data);
-      setLoading(false);
-    };
-
-    fetchData();
-  }, []);
-
-  const handleNewInputChange = (event, fieldName) => {
-    setNewPersonValues({
-      ...newPersonValues,
-      [fieldName]: event.target.value
-    });
-  };
-
-  const handleDelete = async (id) => {
-    setLoading(true);
-    const persons = await deletePerson(id);
-    setPersons(persons);
-    setLoading(false);
-  };
-
-  const handleEdit = async (person) => {
-    setLoading(true);
-    if (editingPersonId === person.id) {
-      const updatedPerson = await updatePerson(person.id, editedPersonValues);
-
-      setPersons((persons) => {
-        return persons.map((person) =>
-          person.id === updatePerson.id ? updatedPerson : person
-        );
-      });
-
-      setEditingPersonId(null);
-    } else {
-      setEditingPersonId(person.id);
-      setEditedPersonValues({ ...person });
-    }
-    setLoading(false);
-  };
+  useQuery("persons", () => dispatch(fetchPersonsAsync()));
 
   const handleInputChange = (event, fieldName) => {
     setEditedPersonValues({
@@ -79,13 +30,32 @@ const Table = () => {
     });
   };
 
-  const handleAddNew = async () => {
-    setLoading(true);
-    const persons = await updatePersons(newPersonValues);
-    setPersons(persons);
-    setLoading(false);
+  const handleNewInputChange = (event, fieldName) => {
+    setNewPersonValues({
+      ...newPersonValues,
+      [fieldName]: event.target.value
+    });
   };
 
+  const handleAddNew = () => {
+    dispatch(addPersonAsync(newPersonValues));
+    setNewPersonValues(FIELD_INIT_DATA);
+  };
+
+  const handleEdit = (person) => {
+    if (editingPersonId === person.id) {
+      dispatch(updatePersonAsync({ id: person.id, data: editedPersonValues }))
+      setEditingPersonId(null);
+    } else {
+      setEditingPersonId(person.id);
+      setEditedPersonValues({ ...person });
+    }
+  };
+
+  const handleDelete = (id) => {
+    dispatch(deletePersonAsync(id))
+  };
+    
   return (
     <TableWrapper>
       <TableHeader columnNames={COLUMN_NAMES} />

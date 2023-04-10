@@ -1,64 +1,39 @@
-const mockData = [
-  {
-    id: 1,
-    name: "John Doe",
-    age: 30,
-    about: "Lorem ipsum dolor sit amet, consectetur adipiscing elit."
-  },
-  {
-    id: 2,
-    name: "Jane Smith",
-    age: 25,
-    about:
-      "Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium."
-  },
-  {
-    id: 3,
-    name: "Bob Johnson",
-    age: 45,
-    about:
-      "Ut enim ad minima veniam, quis nostrum exercitationem ullam corporis suscipit laboriosam."
-  }
-];
+const API_URL = 'https://6433d2e7582420e2316c56f6.mockapi.io/persons';
 
 export const fetchPersons = () => {
-  return new Promise((resolve) => {
-    setTimeout(() => {
-      resolve(mockData);
-    }, 1000);
-  });
+  return fetch(API_URL, {
+    method: 'GET',
+    headers: { 'Content-Type': 'application/json' }
+  })
+    .then(response => response.json())
+    .catch(error => { console.error(error); throw error });
 };
 
-export const updatePerson = (personId, updatedData) => {
-  return new Promise((resolve, reject) => {
-    // find the person with the given id
-    const personToUpdate = mockData.find((person) => person.id === personId);
-
-    // if the person was found, update their data and resolve the promise
-    if (personToUpdate) {
-      setTimeout(() => {
-        Object.assign(personToUpdate, updatedData);
-        resolve(personToUpdate);
-      }, 1500);
-    } else {
-      reject(new Error(`No person with id ${personId} found.`));
-    }
-  });
+export const updatePerson = (personId, { name, age, about }) => {
+  return fetch(`${API_URL}/${personId}`, {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ name, age, about })
+  })
+    .then(response => response.json())
+    .catch(error => { console.error(error); throw error });
 };
 
-export const updatePersons = (person) => {
-  return new Promise((resolve) => {
-    setTimeout(() => {
-      resolve([...mockData, { ...person, id: mockData.length + 1 }]);
-    }, 1500);
-  });
+export const updatePersons = ({ age, name, about }) => {
+  return fetch(API_URL, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ age, name, about })
+  })
+    .then(response => response.json())
+    .catch(error => { console.error(error); throw error });
 };
 
 export const deletePerson = (personId) => {
-  return new Promise((resolve) => {
-    setTimeout(() => {
-      const persons = mockData.filter(({ id }) => id !== personId);
-      resolve(persons);
-    }, 1500);
-  });
+  return fetch(`${API_URL}/${personId}`, {
+    method: 'DELETE',
+    headers: { 'Content-Type': 'application/json' },
+  })
+    .then(response => response.json())
+    .catch(error => { console.error(error); throw error });
 };
