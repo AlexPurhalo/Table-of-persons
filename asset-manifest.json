@@ -1,0 +1,10 @@
+{
+  "files": {
+    "main.js": "/Table-of-persons/static/js/main.c046b2ea.js",
+    "index.html": "/Table-of-persons/index.html",
+    "main.c046b2ea.js.map": "/Table-of-persons/static/js/main.c046b2ea.js.map"
+  },
+  "entrypoints": [
+    "static/js/main.c046b2ea.js"
+  ]
+}
