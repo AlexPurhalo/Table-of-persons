@@ -11,7 +11,7 @@ import { NewPersonRow } from "./NewPersonRow";
 import { TableHeader } from "./TableHeader";
 import { TableBody } from "./TableBody";
 
-const COLUMN_NAMES = ["ID", "Name", "Age", "About", "Edit", "Delete"];
+const COLUMN_NAMES = ["ID", "Name", "Age", "About", "", ""];
 
 const Table = () => {
   const [persons, setPersons] = useState([]);
@@ -84,8 +84,10 @@ const Table = () => {
     const persons = await updatePersons(newPersonValues);
     setPersons(persons);
     setLoading(false);
+    setNewPersonValues({  name: "", age: null, about: "" })
   };
 
+    
   return (
     <TableWrapper>
       <TableHeader columnNames={COLUMN_NAMES} />
