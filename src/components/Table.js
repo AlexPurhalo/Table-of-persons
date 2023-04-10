@@ -1,28 +1,27 @@
-import React, { useState, useReducer } from "react";
+import React, { useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import { useQuery } from "react-query";
 import { TableWrapper } from "../styles/TableWrapper";
-import { updatePerson, deletePerson, updatePersons, fetchPersons } from "../requests";
 import { TableRow } from "./TableRow";
 import { NewPersonRow } from "./NewPersonRow";
 import { TableHeader } from "./TableHeader";
 import { TableBody } from "./TableBody";
-import { tableReducer, initialState } from '../reducers/tableReducer';
+import { fetchPersonsAsync, addPersonAsync, deletePersonAsync, updatePersonAsync } from '../personsSlice'
+import { selectPersons, selectPersonsLoading } from '../personsSlice'
 
 const COLUMN_NAMES = ["ID", "Name", "Age", "About", "", ""];
 const FIELD_INIT_DATA = {name: "", age: '', about: ""}
 
 const Table = () => {
-  const [{ persons, loading }, dispatch] = useReducer(tableReducer, initialState);
+  const dispatch = useDispatch();
+  const persons = useSelector(selectPersons);
+  const loading = useSelector(selectPersonsLoading)
+
   const [editingPersonId, setEditingPersonId] = useState(null);
   const [editedPersonValues, setEditedPersonValues] = useState(FIELD_INIT_DATA);
   const [newPersonValues, setNewPersonValues] = useState(FIELD_INIT_DATA);
 
-  useQuery('persons', fetchPersons, {
-    refetchOnWindowFocus: false, 
-    onSuccess: (data) => {
-      dispatch({ type: 'FETCH_SUCCESS', payload: data })
-    },
-  });
+  useQuery("persons", () => dispatch(fetchPersonsAsync()));
 
   const handleInputChange = (event, fieldName) => {
     setEditedPersonValues({
@@ -38,18 +37,14 @@ const Table = () => {
     });
   };
 
-  const handleAddNew = async () => {
-    dispatch({ type: 'SET_LOADING', payload: true });
-    const person = await updatePersons(newPersonValues);
-    dispatch({ type: 'UPDATE_PERSONS', payload: person });
-    setNewPersonValues(FIELD_INIT_DATA)
+  const handleAddNew = () => {
+    dispatch(addPersonAsync(newPersonValues));
+    setNewPersonValues(FIELD_INIT_DATA);
   };
 
-  const handleEdit = async (person) => {
+  const handleEdit = (person) => {
     if (editingPersonId === person.id) {
-      dispatch({ type: 'SET_LOADING', payload: true });
-      const updatedPerson = await updatePerson(person.id, editedPersonValues);
-      dispatch({ type: 'UPDATE_PERSON', payload: updatedPerson });
+      dispatch(updatePersonAsync({ id: person.id, data: editedPersonValues }))
       setEditingPersonId(null);
     } else {
       setEditingPersonId(person.id);
@@ -57,10 +52,8 @@ const Table = () => {
     }
   };
 
-  const handleDelete = async (id) => {
-    dispatch({ type: 'SET_LOADING', payload: true });
-    const { id: personId } = await deletePerson(id);
-    dispatch({ type: 'DELETE_PERSON', payload: { id: personId } });
+  const handleDelete = (id) => {
+    dispatch(deletePersonAsync(id))
   };
     
   return (
