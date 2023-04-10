@@ -1,43 +1,29 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
+import { useQuery } from "react-query";
 import { TableWrapper } from "../styles/TableWrapper";
-import {
-  updatePerson,
-  deletePerson,
-  updatePersons,
-  fetchPersons
-} from "../requests";
+import { updatePerson, deletePerson, updatePersons, fetchPersons } from "../requests";
 import { TableRow } from "./TableRow";
 import { NewPersonRow } from "./NewPersonRow";
 import { TableHeader } from "./TableHeader";
 import { TableBody } from "./TableBody";
 
 const COLUMN_NAMES = ["ID", "Name", "Age", "About", "", ""];
+const FIELD_INIT_DATA = {name: "", age: '', about: ""}
 
 const Table = () => {
   const [persons, setPersons] = useState([]);
   const [loading, setLoading] = useState(true);
   const [editingPersonId, setEditingPersonId] = useState(null);
-  const [editedPersonValues, setEditedPersonValues] = useState({
-    name: "",
-    age: null,
-    about: ""
-  });
+  const [editedPersonValues, setEditedPersonValues] = useState(FIELD_INIT_DATA);
+  const [newPersonValues, setNewPersonValues] = useState(FIELD_INIT_DATA);
 
-  const [newPersonValues, setNewPersonValues] = useState({
-    name: "",
-    age: null,
-    about: ""
-  });
-
-  useEffect(() => {
-    const fetchData = async () => {
-      const data = await fetchPersons();
-      setPersons(data);
+  useQuery('persons', fetchPersons, {
+    refetchOnWindowFocus: false, 
+    onSuccess: (data) => {
+      setPersons(data.reverse())
       setLoading(false);
-    };
-
-    fetchData();
-  }, []);
+    },
+  });
 
   const handleNewInputChange = (event, fieldName) => {
     setNewPersonValues({
@@ -48,8 +34,9 @@ const Table = () => {
 
   const handleDelete = async (id) => {
     setLoading(true);
-    const persons = await deletePerson(id);
-    setPersons(persons);
+    const { id: personId } = await deletePerson(id);
+    const filteredPersons = persons.filter(({ id }) => id !== personId) 
+    setPersons(filteredPersons);
     setLoading(false);
   };
 
@@ -57,13 +44,14 @@ const Table = () => {
     setLoading(true);
     if (editingPersonId === person.id) {
       const updatedPerson = await updatePerson(person.id, editedPersonValues);
+      const updatedPersons = persons.map(
+        person =>
+          person.id === updatedPerson.id
+            ? updatedPerson
+            : person
+      )
 
-      setPersons((persons) => {
-        return persons.map((person) =>
-          person.id === updatePerson.id ? updatedPerson : person
-        );
-      });
-
+      setPersons(updatedPersons);
       setEditingPersonId(null);
     } else {
       setEditingPersonId(person.id);
@@ -81,10 +69,10 @@ const Table = () => {
 
   const handleAddNew = async () => {
     setLoading(true);
-    const persons = await updatePersons(newPersonValues);
-    setPersons(persons);
+    const person = await updatePersons(newPersonValues);
+    setPersons([person , ...persons]);
     setLoading(false);
-    setNewPersonValues({  name: "", age: null, about: "" })
+    setNewPersonValues(FIELD_INIT_DATA)
   };
 
     

@@ -5,7 +5,6 @@ import { AppWrapper } from "../styles/AppWrapper";
 const App = () => {
   return (
     <AppWrapper>
-      <h1>Person Table</h1>
       <Table />
     </AppWrapper>
   );

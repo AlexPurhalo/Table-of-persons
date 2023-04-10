@@ -4,8 +4,8 @@ export const TableHeader = ({ columnNames }) => {
   return (
     <thead>
       <tr>
-        {columnNames.map((name) => (
-          <th key={name}>{name}</th>
+        {columnNames.map((name, i) => (
+          <th key={i}>{name}</th>
         ))}
       </tr>
     </thead>
