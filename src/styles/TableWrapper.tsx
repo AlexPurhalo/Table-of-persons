@@ -1,5 +1,6 @@
 import styled from "styled-components";
 
+
 export const TableWrapper = styled.table`
   border-collapse: collapse;
   width: 100%;
@@ -46,7 +47,7 @@ export const TableWrapper = styled.table`
     border-radius: 4px;
 
     &:disabled {
-      background-color: ${(props) => (props.loading ? "red" : "#ddd")};
+      background-color: ${(props: { loading?: boolean }) => ((props.loading) ? "red" : "#ddd")};
       cursor: not-allowed;
     }
   }

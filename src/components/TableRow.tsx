@@ -1,7 +1,25 @@
 import React from "react";
 import { TableCell } from "./TableCell";
+import { PersonInput } from './Table';
 
-export const TableRow = ({
+interface Person {
+  id: string;
+  name: string;
+  age: string;
+  about: string;
+}
+
+interface Props {
+  person: Person;
+  editingPersonId: string | null;
+  editedPersonValues: PersonInput;
+  handleEdit: (person: Person) => void;
+  handleInputChange: (event: React.ChangeEvent<HTMLInputElement>, fieldName: string) => void;
+  handleDelete: (id: string) => void;
+  loading?: boolean;
+}
+
+export const TableRow: React.FC<Props> = ({
   person,
   editingPersonId,
   editedPersonValues,

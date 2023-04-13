@@ -1,6 +1,10 @@
 import React from "react";
 
-export const TableHeader = ({ columnNames }) => {
+interface TableHeaderProps {
+  columnNames: string[];
+}
+
+export const TableHeader = ({ columnNames }: TableHeaderProps) => {
   return (
     <thead>
       <tr>

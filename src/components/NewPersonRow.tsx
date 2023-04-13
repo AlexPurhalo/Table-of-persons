@@ -1,6 +1,15 @@
+import React from 'react';
 import { TableCell } from "./TableCell";
+import { PersonInput } from './Table';
 
-export const NewPersonRow = ({ values, loading, onInputChange, onAddNew }) => (
+interface NewPersonRowProps {
+  values: PersonInput;
+  loading: boolean;
+  onInputChange: (event: React.ChangeEvent<HTMLInputElement>, fieldName: string) => void;
+  onAddNew: () => void;
+}
+
+export const NewPersonRow: React.FC<NewPersonRowProps> = ({ values, loading, onInputChange, onAddNew }) => (
   <tr>
     <td>---</td>
     <td>
